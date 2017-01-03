@@ -237,6 +237,147 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://cathycathykc.giyhub.io/2017/01/03/ssh-keygen/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Kc Hsü">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="Kc Hsü" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/01/03/ssh-keygen/" itemprop="url">
+                  利用ssh key免密碼登入遠端機器
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">發表於</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-03T17:00:21+08:00">
+                2017-01-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>爾偶會用一次的東西<br>寫下來幫助下次要用到的自己 XD</p>
+<p>基本概念就是產生一組<del>滿滿的大 亂 碼</del> private key 跟 public key<br>然後把public key丟到各個需要遠端登入又懶得每次打密碼的主機上（安全性也比較高啦<br>之後連線就可直接以這組key作為驗證</p>
+<p>首先要在本機產生一組key<br><code>ssh-keygen -t rsa</code></p>
+<p>也可以指定email產生一組key<br><code>ssh-keygen -t rsa -C &#39;me@email.com&#39;</code></p>
+<p>輸入指令後會詢問存放位置及密碼(passphrase)，位置預設是<code>/home/my_name/.ssh/id_rsa</code><br>如果不變更可以直接按Enter</p>
+<p>接著就會在<code>~/.ssh/</code>資料夾中產生<code>id_rsa</code>以及<code>id_rsa.pub</code>兩個檔案</p>
+<p>有了key之後<br>下一步就是把key丟到遠端的機器裡<br>以便未來登入時可以不用輸入密碼</p>
+<p>先把public key複製上過去<br><code>scp ~/.ssh/id_rsa.pub my_name@server_host:~/.ssh/</code></p>
+<p>然後連線到遠端server<br><code>ssh my_name@server_host</code></p>
+<p>把剛剛複製過來的id_rsa寫進authorized_keys<br><code>cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</code></p>
+<p>基本上到這裡就可以快快樂樂的免密碼遠端登入了</p>
+<p>BUT！如果遠端機器上沒有.ssh這個資料夾的話，這個作法在scp的時候就會先爆炸了</p>
+<p>第一次做的時候就傻傻的直接連上去 <code>mkdir .ssh</code> 結束這回合（遮臉</p>
+<p>後來查了一下發現有另一個指令可以直接用阿！如下：</p>
+<p>透過ssh-copy-id這個指令，把id_rsa.pub複製到遠端的.ssh/authorized_keys<br><code>ssh-copy-id my_name@server_host</code></p>
+<p>如果需要指定檔案的話，可以用<code>-i</code>加入參數<br><code>ssh-copy-id -i other_rsa.pub my_name@server_host</code></p>
+<p>接著可以進一步用<code>~/.ssh/config</code>設定user、host等資訊，讓連線更簡便</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Host server_name // 自訂連線名稱</div><div class="line">User my_name // 遠端帳號</div><div class="line">Hostname server.host_name.com // server hostname</div><div class="line">IdentityFile /home/my_name/.ssh/id_rsa // 指定private key</div></pre></td></tr></table></figure>
+<p>到這裡就可以把連線的指令縮減成<code>ssh server_name</code>啦～</p>
+<p>github也可以用ssh key達到免密碼的功能</p>
+<p>用github註冊的email產生key之後<br>開啟 ssh-agent<br><code>eval &quot;$(ssh-agent -s)&quot;</code></p>
+<p>把private key加入<br><code>ssh-add ~/.ssh/github_rsa</code></p>
+<p>再把public key貼到<a href="https://github.com/settings/keys" target="_blank" rel="external">github</a>上<br>就大功告成啦～</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
   <link itemprop="mainEntityOfPage" href="http://cathycathykc.giyhub.io/2016/12/28/talk-to-fatty/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -704,7 +845,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">文章</span>
               </a>
             </div>
@@ -748,7 +889,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
